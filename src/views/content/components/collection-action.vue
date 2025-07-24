@@ -3,6 +3,18 @@
     class="hidden items-center gap-x-2 group-hover/item:flex"
     :class="{ '!flex': isShowTagAction }"
   >
+    <PopoverWrapper :message="ft('add', 'card')">
+      <n-button
+        quaternary
+        size="small"
+        class="w-[28px]"
+        @click="onAddCard(item)"
+      >
+        <template #icon>
+          <n-icon :component="Add" size="18" />
+        </template>
+      </n-button>
+    </PopoverWrapper>
     <PopoverWrapper :message="ft('edit', 'collection')">
       <n-button
         quaternary
@@ -33,7 +45,7 @@
 
 <script setup lang="tsx">
 import { CollectionWithCards } from "@/type.ts"
-import { FolderMoveTo, Delete, Edit } from "@vicons/carbon"
+import { FolderMoveTo, Delete, Edit, Add } from "@vicons/carbon"
 import { useDialog } from "naive-ui"
 import dataManager from "@/db"
 import { useRefresh } from "@/hooks/useRresh.ts"
@@ -61,6 +73,40 @@ provide("isShowTagAction", {
 
 const { open: openEditDialog } = useEditDialog()
 const { open: openDeleteDialog } = useDeleteDialog()
+
+function onAddCard(item: CollectionWithCards) {
+  const formModel = ref({
+    title: '',
+    url: '',
+    description: '',
+  })
+  openEditDialog({
+    title: ft('add', 'card'),
+    renderContent: () => (
+      <n-form model={formModel.value}>
+        <n-form-item label={`${ft('title')}:`}>
+          <n-input v-model:value={formModel.value.title} placeholder={ft('placeholder', 'title')} />
+        </n-form-item>
+        <n-form-item label={`${ft('url')}:`}>
+          <n-input v-model:value={formModel.value.url} placeholder={ft('placeholder', 'url')} />
+        </n-form-item>
+        <n-form-item label={`${ft('description')}:`}>
+          <n-input v-model:value={formModel.value.description} placeholder={ft('placeholder', 'description')} />
+        </n-form-item>
+      </n-form>
+    ),
+    onPositiveClick: async () => {
+      if (!formModel.value.title || !formModel.value.url) return
+      await dataManager.addCard({
+        title: formModel.value.title,
+        url: formModel.value.url,
+        description: formModel.value.description,
+        collectionId: item.id,
+      })
+      await refreshCollections()
+    },
+  })
+}
 
 function onEditCollection(item: CollectionWithCards) {
   const formModel = ref({ title: item.title })
