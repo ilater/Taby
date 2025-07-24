@@ -31,7 +31,6 @@
       <LeftMoreAction />
     </div>
     <div class="flex-center gap-x-3">
-      <ManualAddCard />
       <EditSpace :title="title!" :icon="icon!" />
       <AddCollection />
       <SearchBtn />
@@ -62,7 +61,6 @@ import PinIcon from "@/components/pin-icon.vue"
 import { useLayoutStore } from "@/store/layout"
 import type { layoutMode } from "@/type"
 import EditSpace from "@/views/navs/components/edit-space.vue"
-import ManualAddCard from "@/views/navs/components/manual-add-card.vue"
 import TopDragableAction from "@/views/navs/components/top-dragable-action.vue"
 import LeftMoreAction from "@/views/navs/components/left-more-action.vue"
 
