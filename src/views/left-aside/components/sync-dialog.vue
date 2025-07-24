@@ -229,6 +229,13 @@ const handleDownload = () => {
   })
 }
 
+const startUpSync = async () => {
+  await syncManager.triggerDownload()
+  await refreshSpaces()
+  await refreshCollections()
+  await updateContextMenus()
+}
+
 watch(show, (value) => {
   if (value) {
     const accessToken = localStorage.getItem(SYNC_GIST_TOKEN)

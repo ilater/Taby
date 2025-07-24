@@ -13,6 +13,7 @@ import { EntityTable } from "dexie"
 
 class SyncManager {
   private static instance: SyncManager
+  // SYNC_INTERVAL = 1000 * 60 * 5 // 5 minutes
   SYNC_INTERVAL = 1000 * 60 * 5 // 5 minutes
   modifiedTables: Set<string> = new Set()
   uploadModifiedTablesDebounce: DebouncedFunc<() => Promise<void>>
@@ -230,6 +231,21 @@ class SyncManager {
     } else {
       localStorage.removeItem("lastModifiedTime")
     }
+  }
+
+  // 启动时自动同步方法，首次进入立即同步，5分钟内不再重复，5分钟后再次进入才同步
+  async startUpSync() {
+    console.log("startUpSync into")
+    const SYNC_INTERVAL = 5 * 60 * 1000; // 5分钟
+    const lastSync = Number(localStorage.getItem('taby_last_startup_sync') || 0);
+    const now = Date.now();
+    if (!lastSync || now - lastSync > SYNC_INTERVAL) {
+      await this.triggerDownload();
+      localStorage.setItem('taby_last_startup_sync', String(now));
+      console.log("startUpSync done")
+      return true
+    }
+    return false
   }
 }
 

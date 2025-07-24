@@ -94,12 +94,13 @@ onBeforeMount(async () => {
 })
 
 onMounted(async () => {
+  const didSync = await syncManager.startUpSync();
   await new Promise((resolve) => setTimeout(resolve, 100))
   await refreshSpaces()
   await refreshCollections()
   await updateContextMenus()
   const isDownloaded = await syncManager.autoDownload()
-  if (isDownloaded) {
+  if (didSync || isDownloaded) {
     await refreshSpaces()
     await refreshCollections()
   }
